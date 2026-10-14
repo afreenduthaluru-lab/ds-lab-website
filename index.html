@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS LAB — Data Science Laboratory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-main">
+    <div class="brand">
+      <div class="logo-wrap">
+        <img id="siteLogo" class="logo-img" alt="Site logo" onclick="go('home')" title="Go to Home">
+        <button class="logo-edit" type="button" onclick="openLogoModal()" title="Change logo" aria-label="Change logo">✎</button>
+      </div>
+      <div class="brand-title" onclick="go('home')"><b>DS LAB</b><small>DATA SCIENCE LAB</small></div>
+    </div>
+    <div class="top-right">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme">☀</button>
+    </div>
+  </div>
+  <div class="nav-row">
+    <div class="wrap">
+      <nav class="tabs" id="tabs" aria-label="Main navigation">
+        <button data-view="home" class="active">🏠 Home</button>
+        <button data-view="modules">📚 Modules</button>
+        <button data-view="experiments">🧪 Experiments</button>
+        <button data-view="tools">🛠️ Tools</button>
+        <button data-view="resources">📎 Resources</button>
+        <button data-view="projects">🚀 Projects</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HOME: hero + five dashboard cards -->
+  <section class="view active" id="view-home">
+    <div class="home-top">
+      <div class="hero banner">
+        <button class="btn small ghost hero-edit" onclick="openHomeModal()" title="Edit title, subtitle and logo">✎ Edit banner</button>
+        <div class="banner-inner">
+          <div class="banner-logo"><img id="heroLogo" alt="Website logo"></div>
+          <div class="banner-text">
+            <h1 id="heroTitle"></h1>
+            <p class="lead" id="heroLead"></p>
+          </div>
+        </div>
+      </div>
+      <aside class="pcard" id="profileCard" aria-label="Profile card"></aside>
+    </div>
+
+    <div class="section-h"><div><h2>Dashboard</h2><p>Choose a category to view, add or manage its items.</p></div></div>
+    <div class="dash" id="dashGrid"></div>
+  </section>
+
+  <!-- EXPERIMENTS -->
+  <section class="view" id="view-experiments">
+    <div class="section-h">
+      <div><h2>Lab Experiments</h2><p id="expCount">Add your experiments — reorder anytime with ↑ ↓.</p></div>
+      <div class="actions">
+        <button class="btn primary" onclick="openExpModal()">＋ Add New Experiment</button>
+        <button class="btn small" onclick="exportData()">⬇ Export</button>
+        <button class="btn small" onclick="document.getElementById('importFile').click()">⬆ Import</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+    </div>
+    <div class="searchbar"><input id="expSearch" placeholder="🔍 Search experiments…" oninput="renderExperiments()"></div>
+    <div class="grid" id="expGrid"></div>
+  </section>
+
+  <section class="view" id="view-exp"></section>
+  <section class="view" id="view-sub"></section>
+  <section class="view" id="view-video"></section>
+
+  <!-- CATEGORY PAGES (Modules / Tools / Resources / Projects) — filled by js/app.js -->
+  <section class="view" id="view-modules"></section>
+  <section class="view" id="view-tools"></section>
+  <section class="view" id="view-resources"></section>
+  <section class="view" id="view-projects"></section>
+  <section class="view" id="view-item"></section>
+
+</main>
+
+<div class="mobile-nav" id="mtabs">
+  <button data-view="home" class="active">🏠 Home</button>
+  <button data-view="modules">📚 Modules</button>
+  <button data-view="experiments">🧪 Experiments</button>
+  <button data-view="tools">🛠️ Tools</button>
+  <button data-view="resources">📎 Resources</button>
+  <button data-view="projects">🚀 Projects</button>
+</div>
+
+<footer><div class="wrap"><span>© 2026 DS LAB — Data Science Laboratory record.</span><span id="backendStatus" onclick="retryBackend()"></span><span id="footProfile"></span></div></footer>
+
+<!-- PROFILE -->
+<div class="modal-bg" id="profileModal"><div class="modal">
+  <h3>Edit profile</h3><p class="m-sub">Shown in the profile card on the home page. Saved in the database.</p>
+  <div class="f2">
+    <div class="f"><label>Name</label><input id="pf_name" placeholder="Your full name"></div>
+    <div class="f"><label>Roll Number</label><input id="pf_roll" placeholder="e.g. 21CS001"></div>
+  </div>
+  <div class="f2">
+    <div class="f"><label>Class</label><input id="pf_class" placeholder="e.g. B.Tech CSE – Data Science"></div>
+    <div class="f"><label>University</label><input id="pf_uni" placeholder="Your university"></div>
+  </div>
+  <div class="f-sec">PHOTO</div>
+  <div class="f"><label>Profile photo (upload, auto-compressed)</label><input type="file" id="pf_photo" accept="image/*"></div>
+  <div class="fileline" style="margin-top:-4px"><button class="btn small danger" type="button" onclick="removeProfilePhoto()">Remove current photo</button></div>
+  <div class="f-sec">FACULTY</div>
+  <div class="f2">
+    <div class="f"><label>Faculty name</label><input id="pf_faculty" placeholder="Dr. ..."></div>
+    <div class="f"><label>Designation</label><input id="pf_desig" placeholder="Assistant Professor, Dept. of CSE"></div>
+  </div>
+  <div class="f-sec">CONNECT</div>
+  <div class="f2">
+    <div class="f"><label>LinkedIn URL</label><input id="pf_linkedin" placeholder="https://linkedin.com/in/..."></div>
+    <div class="f"><label>GitHub URL</label><input id="pf_github" placeholder="https://github.com/..."></div>
+  </div>
+  <div class="f2">
+    <div class="f"><label>YouTube / other</label><input id="pf_youtube"></div>
+    <div class="f"><label>Email</label><input id="pf_email"></div>
+  </div>
+  <div class="f"><label>Portfolio / website</label><input id="pf_site"></div>
+  <div class="mrow"><button class="btn" onclick="closeModal('profileModal')">Cancel</button><button class="btn primary" onclick="saveProfile()">Save profile</button></div>
+</div></div>
+
+<!-- HOME BANNER EDITOR -->
+<div class="modal-bg" id="homeModal"><div class="modal">
+  <h3>Edit main banner</h3><p class="m-sub">Title, subtitle and logo of the home banner. Saved automatically in the database.</p>
+  <div class="f"><label>Title</label><input id="hm_title" placeholder="Data Science"></div>
+  <div class="f"><label>Subtitle</label><textarea id="hm_sub" style="min-height:70px" placeholder="Your Digital Library for Learning, Experiments and Projects"></textarea></div>
+  <div class="f-sec">LOGO</div>
+  <div class="logo-preview"><img id="hmLogoPreview" alt="Current logo"></div>
+  <div class="f"><label>Upload a new logo (PNG, JPG, SVG, WebP)</label><input type="file" id="hm_logoFile" accept="image/*"></div>
+  <div class="fileline"><button class="btn small danger" type="button" onclick="resetLogo()">Reset logo to default</button></div>
+  <div class="mrow"><button class="btn danger" onclick="resetHome()">Reset text to default</button><button class="btn" onclick="closeModal('homeModal')">Cancel</button><button class="btn primary" onclick="saveHome()">Save</button></div>
+</div></div>
+
+<!-- EXPERIMENT EDITOR (with inline sub-experiments) -->
+<div class="modal-bg" id="expModal"><div class="modal wide">
+  <h3 id="expModalTitle">Add experiment</h3><p class="m-sub">Fill what you need — everything stays editable later. Add sub-experiments below; they save together with the experiment.</p>
+  <div class="f-sec" style="margin-top:0;border:0;padding:0">BASIC</div>
+  <div class="f"><label>Experiment title *</label><input id="ex_title" placeholder="e.g. Linear Regression — Price Prediction"></div>
+  <div class="f"><label>Description (shown on the card and in More Info)</label><textarea id="ex_tagline" style="min-height:70px" placeholder="e.g. From-scratch least squares, train-test split and RMSE"></textarea></div>
+  <div class="f2">
+    <div class="f"><label>Cover image URL (optional)</label><input id="ex_coverUrl" placeholder="https://..."></div>
+    <div class="f"><label>…or upload cover</label><input type="file" id="ex_coverFile" accept="image/*"></div>
+  </div>
+  <div class="f2">
+    <div class="f"><label>GitHub repo URL</label><input id="ex_github" placeholder="https://github.com/you/ds-lab/tree/main/exp1"></div>
+    <div class="f"><label>Overview video URL (YouTube link / embed / mp4)</label><input id="ex_video" placeholder="https://youtube.com/watch?v=..."></div>
+  </div>
+  <div class="f"><label class="check"><input type="checkbox" id="ex_needsFile"> This experiment needs a CSV / data file</label></div>
+  <div class="f2">
+    <div class="f"><label>Sample file name</label><input id="ex_sampleName" placeholder="data.csv"></div>
+    <div class="f"><label>Insert CSV starter template</label><select id="ex_template" onchange="insertTemplate()"><option value="">— choose —</option><option value="blank">Blank 3-col</option><option value="students">Students</option><option value="houses">Houses</option><option value="sales">Sales</option></select></div>
+  </div>
+  <div class="f"><label>Sample CSV content (used by “Load sample” in Run panel)</label><textarea id="ex_sampleText" class="mono" placeholder="col1,col2&#10;1,2"></textarea></div>
+  <div class="f-sec">CODE & OUTPUT</div>
+  <div class="f"><label>Python code (runs in browser)</label><textarea id="ex_code" class="mono" style="min-height:180px"></textarea></div>
+  <div class="f"><label>Expected output</label><textarea id="ex_expected" class="mono" style="min-height:70px"></textarea></div>
+  <div class="f-sec">REFERENCES</div>
+  <div class="f"><label>YouTube references (one per line: Label | URL)</label><textarea id="ex_yts" style="min-height:64px" placeholder="Pandas tutorial | https://youtube.com/watch?v=..."></textarea></div>
+  <div class="f-sec">SUB-EXPERIMENTS (save together with this experiment)</div>
+  <div id="ex_subsList"></div>
+  <div class="fileline"><button class="btn small primary" type="button" onclick="openSubModalFromDraft()">+ Add sub-experiment</button><span id="ex_subsCount" style="font-size:12.5px;color:var(--muted)"></span></div>
+  <div class="mrow"><button class="btn" onclick="cancelExpModal()">Cancel</button><button class="btn primary" id="expSaveBtn" onclick="saveExperiment()">Save experiment</button></div>
+</div></div>
+
+<!-- SUB-EXPERIMENT EDITOR (same details as main, except cover + intro video) -->
+<div class="modal-bg" id="subModal"><div class="modal wide">
+  <h3 id="subModalTitle">Add sub-experiment</h3><p class="m-sub" id="subModalFor"></p>
+  <div class="f-sec" style="margin-top:0;border:0;padding:0">BASIC</div>
+  <div class="f"><label>Sub-experiment title *</label><input id="sb_title" placeholder="e.g. Handling Missing Values"></div>
+  <div class="f"><label>Short description (shown in lists)</label><input id="sb_desc" placeholder="e.g. Fill missing values with median"></div>
+  <div class="f"><label>GitHub URL (its own link)</label><input id="sb_github" placeholder="https://github.com/..."></div>
+  <div class="f"><label class="check"><input type="checkbox" id="sb_needsFile"> This sub-experiment needs its own CSV / data file</label></div>
+  <div class="f2">
+    <div class="f"><label>Sample file name</label><input id="sb_sampleName" placeholder="data.csv"></div>
+    <div class="f"><label>Insert CSV starter template</label><select id="sb_template" onchange="insertSubTemplate()"><option value="">— choose —</option><option value="blank">Blank 3-col</option><option value="students">Students</option><option value="houses">Houses</option><option value="sales">Sales</option></select></div>
+  </div>
+  <div class="f"><label>Sample CSV content (leave empty to reuse parent's sample)</label><textarea id="sb_sampleText" class="mono" placeholder="col1,col2&#10;1,2"></textarea></div>
+  <div class="f-sec">CODE & OUTPUT</div>
+  <div class="f"><label>Experiment code / content (runs in browser)</label><textarea id="sb_code" class="mono" style="min-height:150px"></textarea></div>
+  <div class="f"><label>Output / result (optional)</label><textarea id="sb_expected" class="mono" style="min-height:60px"></textarea></div>
+  <div class="f-sec">REFERENCES</div>
+  <div class="f"><label>YouTube references (one per line: Label | URL)</label><textarea id="sb_yts" style="min-height:56px"></textarea></div>
+  <div class="mrow"><button class="btn" onclick="closeModal('subModal')">Cancel</button><button class="btn primary" onclick="saveSub()">Save sub-experiment</button></div>
+</div></div>
+
+<!-- LOGO -->
+<div class="modal-bg" id="logoModal"><div class="modal" style="max-width:440px">
+  <h3>Website logo</h3><p class="m-sub">Upload an image (PNG, JPG, SVG, WebP). It appears in the header immediately and is saved.</p>
+  <div class="logo-preview"><img id="logoPreview" alt="Current logo"></div>
+  <div class="f"><label>Choose a new logo</label><input type="file" id="logoFile" accept="image/*"></div>
+  <div class="mrow"><button class="btn danger" onclick="resetLogo()">Reset to default</button><button class="btn primary" onclick="closeModal('logoModal')">Done</button></div>
+</div></div>
+
+<!-- GENERIC ITEM EDITOR (Modules / Tools / Resources / Projects) -->
+<div class="modal-bg" id="itemModal"><div class="modal wide">
+  <h3 id="itemModalTitle">Add item</h3><p class="m-sub" id="itemModalSub"></p>
+  <div id="itemFormBody"></div>
+  <div class="mrow"><button class="btn" onclick="closeModal('itemModal')">Cancel</button><button class="btn primary" id="itemSaveBtn" onclick="saveItem()">Save</button></div>
+</div></div>
+
+<div id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
