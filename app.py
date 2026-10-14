@@ -284,13 +284,19 @@ def index():
     return send_from_directory(BASE, "index.html")
 
 
+
 @app.route("/<path:path>")
 def static_files(path):
     if path.startswith("api/"):
         return jsonify({"error": "not found"}), 404
-    # Only the website assets are public; dslab.db, app.py etc. are not served.
-    if path.startswith(("css/", "js/", "assets/")) and os.path.isfile(os.path.join(BASE, path)):
-        return send_from_directory(BASE, path)
+
+    # Never return index.html when a JavaScript or CSS file is missing.
+    if path.startswith(("css/", "js/", "assets/")):
+        file_path = os.path.join(BASE, path)
+        if os.path.isfile(file_path):
+            return send_from_directory(BASE, path)
+        return jsonify({"error": f"File not found: {path}"}), 404
+
     return send_from_directory(BASE, "index.html")
 
 
